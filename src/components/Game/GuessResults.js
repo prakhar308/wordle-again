@@ -2,13 +2,13 @@ import React from 'react';
 
 import Guess from './Guess';
 
-function PreviousGuesses({ previousGuesses, answer }) {
+function GuessResults({ guesses, answer }) {
 	return (
 		<div className="guess-results">
-			{previousGuesses.map(prevGuess => (
+			{guesses.map(guess => (
 				<Guess
 					key={Math.random()}
-					guess={prevGuess}
+					guess={guess}
 					answer={answer}
 				/>
 			))}
@@ -16,4 +16,4 @@ function PreviousGuesses({ previousGuesses, answer }) {
 	);
 }
 
-export default PreviousGuesses;
+export default GuessResults;

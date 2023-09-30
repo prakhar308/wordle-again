@@ -3,7 +3,7 @@ import React from 'react';
 import { sample, range } from '../../utils';
 import { WORDS } from '../../data';
 import GuessInput from './GuessInput';
-import PreviousGuesses from './PreviousGuesses';
+import GuessResults from './GuessResults';
 import { NUM_OF_GUESSES_ALLOWED } from '../../constants';
 
 // Pick a random word on every pageload.
@@ -12,38 +12,33 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function Game() {
+  const [guesses, setGuesses] = React.useState([]);
 
-  const [previousGuesses, setPreviousGuesses] = React.useState(range(0,NUM_OF_GUESSES_ALLOWED).map(val => ""));
-  const guessesMade = previousGuesses.filter(g => g).length;
-
-  let gameStatus;
-  if (previousGuesses[guessesMade-1] === answer) {
-    gameStatus = 'won';
-  } else if(guessesMade === NUM_OF_GUESSES_ALLOWED) {
-    gameStatus = 'lost';
-  } else {
-    gameStatus = 'inProgress';
-  }
+  const [gameStatus, setGameStatus] = React.useState('inProgress'); 
 
   function addGuess(newGuess) {
-    let guessAdded = false;
-    const guesses = previousGuesses.map(prevGuess => {
-      if (!prevGuess && !guessAdded) {
-        guessAdded = true;
-        return newGuess;
-      }
-      return prevGuess;
-    });
-    setPreviousGuesses(guesses);
+    const newGuesses = [...guesses, newGuess];
+    setGuesses(newGuesses);
+
+    if (newGuess === answer) {
+      setGameStatus('won');
+    } else if (newGuesses.length === NUM_OF_GUESSES_ALLOWED) {
+      setGameStatus('lost');
+    }
   }
 
   return (
     <>
+      <GuessResults guesses={guesses} answer={answer}/>
+      <GuessInput
+        addGuess={addGuess}
+        disabled={gameStatus === 'won' || gameStatus === 'lost'}
+      />
       {gameStatus === 'won' &&
         <div className="happy banner">
           <p>
             <strong>Congratulations!</strong> Got it in {' '}
-            <strong>{guessesMade} guesses</strong>.
+            <strong>{guesses.length} guesses</strong>.
           </p>
         </div>
       }
@@ -52,11 +47,6 @@ function Game() {
           <p>Sorry, the correct answer is <strong>{answer}</strong>.</p>
         </div>
       )}
-      <PreviousGuesses previousGuesses={previousGuesses} answer={answer}/>
-      <GuessInput
-        addGuess={addGuess}
-        disabled={gameStatus === 'won' || gameStatus === 'lost'}
-      />
     </>
   );
 }

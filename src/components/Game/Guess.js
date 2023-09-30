@@ -3,27 +3,26 @@ import React from 'react';
 import { range } from '../../utils';
 import { checkGuess } from '../../game-helpers';
 
-function Guess({ guess, answer }) {
-	if (!guess) {
-		return (
-			<p className="guess">
-				{range(0, 5).map(val => (
-					<span key={val} className={'cell'}></span>
-				))}
-			</p>
-		);
-	}
+function Cell({ letter, status }) {
+  const className = status ? `cell ${status}` : 'cell';
 
-	const status = checkGuess(guess, answer);
-	return (
-		<p className="guess">
-			{range(0, 5).map(val => (
-				<span key={val} className={'cell' + ' ' + status[val]['status']}>
-					{guess[val]}
-				</span>
-			))}
-		</p>
-	);
+  return <span className={className}>{letter}</span>;
+}
+
+function Guess({ guess, answer }) {
+  const result = checkGuess(guess, answer);
+
+  return (
+    <p className="guess">
+      {range(5).map((num) => (
+        <Cell
+          key={num}
+          letter={result ? result[num].letter : undefined}
+          status={result ? result[num].status : undefined}
+        />
+      ))}
+    </p>
+  );
 }
 
 export default Guess;
